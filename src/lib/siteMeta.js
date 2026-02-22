@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://psl-rank.vercel.app'
+export const SITE_URL = 'https://pslranked.com'
 export const SITE_NAME = 'PSL Rank'
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`
 

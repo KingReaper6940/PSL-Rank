@@ -12,7 +12,7 @@ export default function Stats() {
     const matches = matchesData || [];
 
     const totalMoggers = moggers.length;
-    const totalVotes = stats.totalVotes || 0;
+    const totalVotes = (stats.localVotes || 0) + (stats.externalVotes || 0);
     const avgElo = totalMoggers > 0 ? Math.round(moggers.reduce((s, m) => s + m.elo, 0) / totalMoggers) : 0;
     const highestElo = totalMoggers > 0 ? Math.max(...moggers.map(m => m.elo)) : 0;
     const lowestElo = totalMoggers > 0 ? Math.min(...moggers.map(m => m.elo)) : 0;
