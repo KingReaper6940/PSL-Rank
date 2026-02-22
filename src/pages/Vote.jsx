@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { Zap, SkipForward, TrendingUp, TrendingDown } from 'lucide-react'
+import { Swords, SkipForward, TrendingUp, TrendingDown } from 'lucide-react'
 import Toast from '../components/Toast'
 import { useQuery, useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
@@ -75,9 +75,16 @@ export default function Vote() {
         return (
             <div className="page">
                 <div className="container">
-                    <div className="empty-state">
-                        <div className="empty-state-icon">⚔️</div>
-                        <div className="empty-state-text">Not enough contenders for a face-off. Add some first.</div>
+                    <div className="empty-state empty-state-polished">
+                        <div className="empty-state-icon-shell" aria-hidden="true">
+                            <Swords size={26} />
+                        </div>
+                        <div>
+                            <h2 className="empty-state-title">No matchup available yet</h2>
+                            <div className="empty-state-text">
+                                Not enough contenders for a face-off. Add some first.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -87,10 +94,24 @@ export default function Vote() {
     return (
         <div className="page">
             <div className="container">
-                <div className="page-header">
-                    <h1 className="page-title text-gradient">GLOBAL MATCHUPS</h1>
-                    <p className="page-subtitle">Select the superior contender to shape the worldwide rankings.</p>
-                </div>
+                <section className="vote-hero-grid animate-fade-in" aria-label="Voting arena intro">
+                    <div className="page-header vote-page-header">
+                        <p className="section-kicker">Live Voting Arena</p>
+                        <h1 className="page-title text-gradient">GLOBAL MATCHUPS</h1>
+                        <p className="page-subtitle">
+                            Select the superior contender to shape the worldwide rankings.
+                        </p>
+                    </div>
+
+                    <aside className="vote-hero-panel glass-panel">
+                        <p className="vote-hero-panel-label">How voting affects rankings</p>
+                        <ul className="vote-hero-list">
+                            <li>Each result updates both contenders immediately.</li>
+                            <li>Upsets create stronger ELO swings than expected wins.</li>
+                            <li>Use Skip if the matchup is not useful.</li>
+                        </ul>
+                    </aside>
+                </section>
 
                 <div className="vote-arena">
                     {matchup.map((mogger, idx) => {
@@ -161,8 +182,8 @@ export default function Vote() {
 
             {toast && <Toast {...toast} onClose={() => setToast(null)} />}
 
-            <div style={{ textAlign: 'center', maxWidth: '600px', margin: '48px auto 0', padding: '0 24px' }}>
-                <p style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', lineHeight: '1.6' }}>
+            <div className="vote-footnote">
+                <p>
                     <strong>The Definitive Global Leaderboard.</strong><br />
                     PSL Rank aggregates worldwide data from ChadScan and other ranking platforms every 15 minutes,
                     merging real-time ELO ratings, win/loss records, and battle counts into one unified global hierarchy.
