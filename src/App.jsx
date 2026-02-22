@@ -5,6 +5,7 @@ import Vote from './pages/Vote'
 import Submit from './pages/Submit'
 import Profile from './pages/Profile'
 import Stats from './pages/Stats'
+import { Analytics } from '@vercel/analytics/react'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/profile/:id" element={<Profile />} />
         <Route path="/stats" element={<Stats />} />
       </Routes>
+      <Analytics />
     </>
   )
 }
