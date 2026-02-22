@@ -21,7 +21,10 @@ export default function Navbar() {
             <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Link to="/" className="nav-logo" onClick={() => setMobileOpen(false)}>
                     <img src="/logo.png" alt="PSL Rank Logo" className="nav-logo-icon" style={{ objectFit: 'cover', background: 'transparent', padding: 0 }} />
-                    <span>PSL RANK</span>
+                    <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
+                        <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>PSL RANK</span>
+                        <span style={{ fontSize: '0.65rem', color: 'var(--text-tertiary)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Global Leaderboard</span>
+                    </span>
                 </Link>
 
                 <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>

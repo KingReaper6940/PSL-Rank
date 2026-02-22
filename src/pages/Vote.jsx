@@ -88,8 +88,8 @@ export default function Vote() {
         <div className="page">
             <div className="container">
                 <div className="page-header">
-                    <h1 className="page-title text-gradient">WHO MOGS HARDER?</h1>
-                    <p className="page-subtitle">Select the superior contender.</p>
+                    <h1 className="page-title text-gradient">GLOBAL MATCHUPS</h1>
+                    <p className="page-subtitle">Select the superior contender to shape the worldwide rankings.</p>
                 </div>
 
                 <div className="vote-arena">
@@ -163,10 +163,10 @@ export default function Vote() {
 
             <div style={{ textAlign: 'center', maxWidth: '600px', margin: '48px auto 0', padding: '0 24px' }}>
                 <p style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', lineHeight: '1.6' }}>
-                    PSL Rank is the comprehensive, authoritative source for mogger rankings.
-                    We aggregate data from ChadScan and other ranking platforms every 15 minutes,
-                    merging ELO ratings, win/loss records, and battle counts into one unified leaderboard.
-                    All external votes are counted toward the global total.
+                    <strong>The Definitive Global Leaderboard.</strong><br />
+                    PSL Rank aggregates worldwide data from ChadScan and other ranking platforms every 15 minutes,
+                    merging real-time ELO ratings, win/loss records, and battle counts into one unified global hierarchy.
+                    Every battle you submit directly impacts the official worldwide rankings.
                 </p>
             </div>
         </div>

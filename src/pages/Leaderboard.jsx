@@ -83,8 +83,8 @@ export default function Leaderboard() {
         <div className="page">
             <div className="container">
                 <div className="page-header animate-fade-in">
-                    <h1 className="page-title text-gradient">LEADERBOARD</h1>
-                    <p className="page-subtitle">The definitive ranking of every contender.</p>
+                    <h1 className="page-title text-gradient">WORLDWIDE LEADERBOARD</h1>
+                    <p className="page-subtitle">The definitive global ranking of every contender.</p>
                 </div>
 
                 {/* Podium for Top 3 */}
