@@ -10,12 +10,4 @@ crons.interval(
     internal.scraper.scrapeChadscan
 );
 
-// Bot that hallucinate matches
-crons.interval(
-    "simulate matches",
-    { minutes: 5 },
-    internal.moggers.simulateRandomMatches,
-    { count: 3 } // Simulates 3 matches every 5 minutes
-);
-
 export default crons;
