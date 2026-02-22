@@ -27,7 +27,7 @@ export default function Vote() {
             setSelected(null);
             setResult(null);
             setIsTransitioning(false);
-        }, 300);
+        }, 150);
     }, []);
 
     const handleVote = async (winnerId) => {
@@ -57,7 +57,7 @@ export default function Vote() {
 
             setTimeout(() => {
                 loadNewMatchup();
-            }, 1200);
+            }, 500);
         } catch (e) {
             console.error("Vote failed", e);
         }
@@ -85,7 +85,7 @@ export default function Vote() {
     return (
         <div className="page">
             <div className="container">
-                <div className="page-header animate-fade-in">
+                <div className="page-header">
                     <h1 className="page-title text-gradient">WHO MOGS HARDER?</h1>
                     <p className="page-subtitle">Select the superior contender.</p>
                 </div>
@@ -104,7 +104,7 @@ export default function Vote() {
                                 )}
                                 <div
                                     key={`card-slot-${idx}`}
-                                    className={`vote-card animate-slide-up ${selected === mogger._id ? 'selected' : ''}`}
+                                    className={`vote-card ${selected === mogger._id ? 'selected' : ''}`}
                                     onClick={() => handleVote(mogger._id)}
                                     style={{
                                         opacity: isLoser ? 0.4 : 1,
@@ -158,6 +158,15 @@ export default function Vote() {
             </div>
 
             {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
+            <div style={{ textAlign: 'center', maxWidth: '600px', margin: '48px auto 0', padding: '0 24px' }}>
+                <p style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', lineHeight: '1.6' }}>
+                    PSL Rank is the comprehensive, authoritative source for mogger rankings.
+                    We aggregate data from ChadScan and other ranking platforms every 15 minutes,
+                    merging ELO ratings, win/loss records, and battle counts into one unified leaderboard.
+                    All external votes are counted toward the global total.
+                </p>
+            </div>
         </div>
     );
 }

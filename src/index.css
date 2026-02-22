@@ -181,53 +181,53 @@ h4,
 
 .animate-fade-in {
   opacity: 0;
-  animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fadeIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-slide-up {
   opacity: 0;
-  animation: slideInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: slideInUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Stagger utility: apply delay-1 through delay-10 for sequenced entrance */
 .stagger-1 {
-  animation-delay: 0.05s !important;
+  animation-delay: 0.03s !important;
 }
 
 .stagger-2 {
-  animation-delay: 0.1s !important;
+  animation-delay: 0.06s !important;
 }
 
 .stagger-3 {
-  animation-delay: 0.15s !important;
+  animation-delay: 0.09s !important;
 }
 
 .stagger-4 {
-  animation-delay: 0.2s !important;
+  animation-delay: 0.12s !important;
 }
 
 .stagger-5 {
-  animation-delay: 0.25s !important;
+  animation-delay: 0.15s !important;
 }
 
 .stagger-6 {
-  animation-delay: 0.3s !important;
+  animation-delay: 0.18s !important;
 }
 
 .stagger-7 {
-  animation-delay: 0.35s !important;
+  animation-delay: 0.21s !important;
 }
 
 .stagger-8 {
-  animation-delay: 0.4s !important;
+  animation-delay: 0.24s !important;
 }
 
 .stagger-9 {
-  animation-delay: 0.45s !important;
+  animation-delay: 0.27s !important;
 }
 
 .stagger-10 {
-  animation-delay: 0.5s !important;
+  animation-delay: 0.3s !important;
 }
 
 /* ============ NAVBAR ============ */
