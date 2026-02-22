@@ -14,6 +14,7 @@ import type * as moggers from "../moggers.js";
 import type * as scraper from "../scraper.js";
 import type * as seed from "../seed.js";
 import type * as seedData from "../seedData.js";
+import type * as upload from "../upload.js";
 
 import type {
   ApiFromModules,
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   scraper: typeof scraper;
   seed: typeof seed;
   seedData: typeof seedData;
+  upload: typeof upload;
 }>;
 
 /**

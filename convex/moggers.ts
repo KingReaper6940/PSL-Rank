@@ -70,13 +70,19 @@ export const addMogger = mutation({
         alias: v.string(),
         tagline: v.string(),
         image: v.string(),
+        storageId: v.optional(v.id("_storage")),
     },
     handler: async (ctx, args) => {
+        let imageUrl = args.image;
+        if (args.storageId) {
+            imageUrl = await ctx.storage.getUrl(args.storageId) || args.image;
+        }
+
         const newMogger = {
             name: args.name,
             alias: args.alias,
             tagline: args.tagline,
-            image: args.image,
+            image: imageUrl,
             elo: 1200,
             wins: 0,
             losses: 0,

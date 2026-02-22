@@ -2,29 +2,54 @@ import { useState } from 'react'
 import { UserPlus, Eye } from 'lucide-react'
 import { getTier } from '../utils/elo'
 import Toast from '../components/Toast'
-import { useMutation } from 'convex/react'
+import { useMutation, useAction } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 
 export default function Submit() {
     const mutateAddMogger = useMutation(api.moggers?.addMogger);
+    const generateUploadUrl = useMutation(api.upload?.generateUploadUrl);
 
     const [name, setName] = useState('');
     const [alias, setAlias] = useState('');
     const [tagline, setTagline] = useState('');
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState(''); // Still used for preview/fallback url
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [toast, setToast] = useState(null);
     const [submitted, setSubmitted] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim()) return;
+        if (!image.trim() && !selectedFile) {
+            setToast({ type: 'error', message: 'An image is required.' });
+            return;
+        }
 
+        setIsUploading(true);
         try {
+            let storageId = undefined;
+
+            if (selectedFile) {
+                // Generate short-lived upload URL
+                const postUrl = await generateUploadUrl();
+                // Post the file directly to Convex storage
+                const result = await fetch(postUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": selectedFile.type },
+                    body: selectedFile,
+                });
+                const { storageId: uploadedStorageId } = await result.json();
+                storageId = uploadedStorageId;
+            }
+
             await mutateAddMogger({
                 name: name.trim(),
                 alias: alias.trim() || name.trim().split(' ')[0],
                 tagline: tagline.trim() || 'New challenger enters the arena.',
                 image: image.trim() || '',
+                storageId,
             });
 
             setToast({ type: 'success', message: `${name.trim()} has entered the leaderboard at 1200 ELO!` });
@@ -36,11 +61,44 @@ export default function Submit() {
                 setAlias('');
                 setTagline('');
                 setImage('');
+                setSelectedFile(null);
                 setSubmitted(false);
             }, 3000);
         } catch (error) {
             console.error("Failed to add mogger:", error);
             setToast({ type: 'error', message: "Failed to add to database." });
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            setSelectedFile(file);
+            setImage(URL.createObjectURL(file)); // local preview
+        } else {
+            setToast({ type: 'error', message: 'Please drop a valid image file.' });
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            setSelectedFile(file);
+            setImage(URL.createObjectURL(file)); // local preview
         }
     };
 
@@ -89,17 +147,60 @@ export default function Submit() {
                         </div>
 
                         <div style={{ marginBottom: '24px' }}>
-                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>Image URL</label>
+                            <label style={{ display: 'block', fontWeight: 600, fontSize: '0.9rem', marginBottom: '8px', color: 'var(--text-secondary)' }}>Mogger Image *</label>
+
+                            <div
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                style={{
+                                    border: `2px dashed ${isDragging ? 'var(--accent-primary)' : 'var(--border-strong)'}`,
+                                    borderRadius: 'var(--radius-lg)',
+                                    padding: '32px 20px',
+                                    textAlign: 'center',
+                                    background: isDragging ? 'var(--bg-surface-elevated)' : 'var(--bg-surface)',
+                                    transition: 'all 0.2s',
+                                    cursor: 'pointer',
+                                    marginBottom: '12px'
+                                }}
+                                onClick={() => document.getElementById('file-upload').click()}
+                            >
+                                <input
+                                    type="file"
+                                    id="file-upload"
+                                    style={{ display: 'none' }}
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                />
+                                {selectedFile ? (
+                                    <div style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>
+                                        ✓ {selectedFile.name} selected
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📸</div>
+                                        <div style={{ color: 'var(--text-primary)', fontWeight: 600, marginBottom: '4px' }}>Drag & Drop an image here</div>
+                                        <div style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem' }}>or click to browse files</div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', margin: '16px 0', color: 'var(--text-tertiary)', fontSize: '0.8rem' }}>
+                                <hr style={{ flex: 1, borderColor: 'var(--border-subtle)' }} />
+                                <span style={{ padding: '0 12px' }}>OR</span>
+                                <hr style={{ flex: 1, borderColor: 'var(--border-subtle)' }} />
+                            </div>
+
                             <input
                                 type="url"
                                 className="form-input"
-                                placeholder="https://example.com/photo.jpg"
-                                value={image}
-                                onChange={(e) => setImage(e.target.value)}
+                                placeholder="Paste image URL directly (fallback)"
+                                value={!selectedFile ? image : ''}
+                                onChange={(e) => {
+                                    setImage(e.target.value);
+                                    setSelectedFile(null); // Clear file if they type a URL
+                                }}
                             />
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '8px', display: 'block' }}>
-                                Paste a direct link to a portrait photo
-                            </span>
                         </div>
 
                         <div style={{ marginBottom: '32px' }}>
@@ -115,9 +216,9 @@ export default function Submit() {
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px 24px', fontSize: '1rem' }} disabled={!name.trim() || submitted}>
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '14px 24px', fontSize: '1rem' }} disabled={!name.trim() || submitted || isUploading}>
                             <UserPlus size={18} />
-                            {submitted ? 'Added Successfully!' : 'Add to Leaderboard'}
+                            {isUploading ? 'Uploading...' : submitted ? 'Added Successfully!' : 'Add to Leaderboard'}
                         </button>
                     </form>
 

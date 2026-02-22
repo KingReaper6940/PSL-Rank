@@ -46,6 +46,10 @@ export default function Stats() {
     // Most voted (by total matches)
     const mostVoted = [...moggers].sort((a, b) => (b.wins + b.losses) - (a.wins + a.losses)).slice(0, 5);
 
+    if (moggersData === undefined || statsData === undefined) {
+        return <div className="page"><div className="page-loader"><div className="spinner"></div></div></div>;
+    }
+
     return (
         <div className="page">
             <div className="container">

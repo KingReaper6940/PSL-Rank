@@ -66,6 +66,10 @@ export default function Leaderboard() {
         return 'neutral';
     };
 
+    if (allMoggersData === undefined) {
+        return <div className="page"><div className="page-loader"><div className="spinner"></div></div></div>;
+    }
+
     return (
         <div className="page">
             <div className="container">

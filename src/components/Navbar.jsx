@@ -20,7 +20,7 @@ export default function Navbar() {
         <nav className="navbar">
             <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Link to="/" className="nav-logo" onClick={() => setMobileOpen(false)}>
-                    <div className="nav-logo-icon">M</div>
+                    <img src="/logo.png" alt="PSL Rank Logo" className="nav-logo-icon" style={{ objectFit: 'cover', background: 'transparent', padding: 0 }} />
                     <span>PSL RANK</span>
                 </Link>
 

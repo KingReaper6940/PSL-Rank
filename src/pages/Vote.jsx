@@ -22,12 +22,10 @@ export default function Vote() {
 
     const loadNewMatchup = useCallback(() => {
         setIsTransitioning(true);
-        setTimeout(() => {
-            setMatchup(null);
-            setSelected(null);
-            setResult(null);
-            setIsTransitioning(false);
-        }, 150);
+        setMatchup(null);
+        setSelected(null);
+        setResult(null);
+        setIsTransitioning(false);
     }, []);
 
     const handleVote = async (winnerId) => {
@@ -57,7 +55,7 @@ export default function Vote() {
 
             setTimeout(() => {
                 loadNewMatchup();
-            }, 500);
+            }, 300); // Super fast 0.3s flash of result before instant switch
         } catch (e) {
             console.error("Vote failed", e);
         }
@@ -68,6 +66,10 @@ export default function Vote() {
         const fallback = e.target.nextElementSibling;
         if (fallback) fallback.style.display = 'flex';
     };
+
+    if (matchupFromDb === undefined) {
+        return <div className="page"><div className="page-loader"><div className="spinner"></div></div></div>;
+    }
 
     if (!matchup) {
         return (
