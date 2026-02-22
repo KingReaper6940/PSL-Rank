@@ -216,7 +216,9 @@ export default function Profile() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {moggerMatches.map((match) => {
                                 const isWin = match.winnerId === mogger._id;
-                                const opponentName = isWin ? match.loserName : match.winnerName;
+                                const opponentId = isWin ? match.loserId : match.winnerId;
+                                const opponent = allMoggers.find(m => m._id === opponentId);
+                                const opponentName = opponent ? opponent.name : 'Unknown';
                                 const eloChange = isWin ? match.winnerEloChange : match.loserEloChange;
 
                                 return (
@@ -233,7 +235,7 @@ export default function Profile() {
                                         </span>
                                         <span style={{ flex: 1, color: 'var(--text-secondary)' }}>vs <strong style={{ color: 'var(--text-primary)' }}>{opponentName}</strong></span>
                                         <span style={{ fontWeight: 600, color: isWin ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
-                                            {eloChange > 0 ? '+' : ''}{eloChange}
+                                            {eloChange ? (eloChange > 0 ? `+${eloChange}` : eloChange) : ''}
                                         </span>
                                         <span style={{ color: 'var(--text-tertiary)', fontSize: '0.8rem' }}>
                                             {new Date(match.timestamp).toLocaleDateString()}

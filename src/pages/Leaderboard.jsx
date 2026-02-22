@@ -13,6 +13,15 @@ export default function Leaderboard() {
     const allMoggersData = useQuery(api.moggers?.getMoggers);
     const allMoggers = allMoggersData || [];
 
+    const globalRanks = useMemo(() => {
+        const sortedDesc = [...allMoggers].sort((a, b) => b.elo - a.elo);
+        const map = {};
+        sortedDesc.forEach((m, idx) => {
+            map[m._id] = idx + 1;
+        });
+        return map;
+    }, [allMoggers]);
+
     const sorted = useMemo(() => {
         let list = [...allMoggers];
 
@@ -194,7 +203,7 @@ export default function Leaderboard() {
                 {/* Table Rows */}
                 <div className="leaderboard-table">
                     {rest.map((mogger, index) => {
-                        const globalRank = showPodium ? index + 4 : index + 1;
+                        const globalRank = globalRanks[mogger._id] || (index + 1);
                         const tier = getTier(mogger.elo);
                         const trend = getTrend(mogger);
                         const winRate = mogger.wins + mogger.losses > 0
