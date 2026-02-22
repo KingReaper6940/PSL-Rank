@@ -180,16 +180,6 @@ export default function Vote() {
                 </div>
             </div>
 
-            {toast && <Toast {...toast} onClose={() => setToast(null)} />}
-
-            <div className="vote-footnote">
-                <p>
-                    <strong>The Definitive Global Leaderboard.</strong><br />
-                    PSL Rank aggregates worldwide data from ChadScan and other ranking platforms every 15 minutes,
-                    merging real-time ELO ratings, win/loss records, and battle counts into one unified global hierarchy.
-                    Every battle you submit directly impacts the official worldwide rankings.
-                </p>
-            </div>
         </div>
     );
 }
