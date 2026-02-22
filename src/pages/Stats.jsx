@@ -1,11 +1,15 @@
 import { Users, Swords, Award, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react'
-import { getMoggers, getStats, getMatches } from '../utils/storage'
 import { getTier } from '../utils/elo'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Stats() {
-    const moggers = getMoggers();
-    const stats = getStats();
-    const matches = getMatches();
+    const moggersData = useQuery(api.moggers?.getMoggers);
+    const moggers = moggersData || [];
+    const statsData = useQuery(api.moggers?.getStats);
+    const stats = statsData || { totalVotes: 0 };
+    const matchesData = useQuery(api.moggers?.getMatches);
+    const matches = matchesData || [];
 
     const totalMoggers = moggers.length;
     const totalVotes = stats.totalVotes || 0;
@@ -107,7 +111,7 @@ export default function Stats() {
                             Most Battled
                         </h3>
                         {mostVoted.map((m, i) => (
-                            <div key={m.id} style={{
+                            <div key={m._id} style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '16px',
@@ -140,7 +144,7 @@ export default function Stats() {
                             Top Risers
                         </h3>
                         {topRisers.length > 0 ? topRisers.map((m, i) => (
-                            <div key={m.id} style={{
+                            <div key={m._id} style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '16px',
@@ -170,7 +174,7 @@ export default function Stats() {
                             Biggest Fallers
                         </h3>
                         {topFallers.length > 0 ? topFallers.map((m, i) => (
-                            <div key={m.id} style={{
+                            <div key={m._id} style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '16px',

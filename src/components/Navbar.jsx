@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Swords, Trophy, UserPlus, BarChart3, Menu, X } from 'lucide-react'
-import { getStats } from '../utils/storage'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Navbar() {
     const location = useLocation();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const stats = getStats();
+    const stats = useQuery(api.moggers?.getStats) || { totalVotes: 0 };
 
     const links = [
         { to: '/', label: 'Battle', icon: <Swords size={16} /> },

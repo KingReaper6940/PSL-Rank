@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { UserPlus, Eye } from 'lucide-react'
-import { addMogger } from '../utils/storage'
 import { getTier } from '../utils/elo'
 import Toast from '../components/Toast'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Submit() {
+    const mutateAddMogger = useMutation(api.moggers?.addMogger);
+
     const [name, setName] = useState('');
     const [alias, setAlias] = useState('');
     const [tagline, setTagline] = useState('');
@@ -12,28 +15,33 @@ export default function Submit() {
     const [toast, setToast] = useState(null);
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!name.trim()) return;
 
-        addMogger({
-            name: name.trim(),
-            alias: alias.trim() || name.trim().split(' ')[0],
-            tagline: tagline.trim() || 'New challenger enters the arena.',
-            image: image.trim() || '',
-        });
+        try {
+            await mutateAddMogger({
+                name: name.trim(),
+                alias: alias.trim() || name.trim().split(' ')[0],
+                tagline: tagline.trim() || 'New challenger enters the arena.',
+                image: image.trim() || '',
+            });
 
-        setToast({ type: 'success', message: `${name.trim()} has entered the leaderboard at 1200 ELO!` });
-        setSubmitted(true);
+            setToast({ type: 'success', message: `${name.trim()} has entered the leaderboard at 1200 ELO!` });
+            setSubmitted(true);
 
-        // Reset after delay
-        setTimeout(() => {
-            setName('');
-            setAlias('');
-            setTagline('');
-            setImage('');
-            setSubmitted(false);
-        }, 3000);
+            // Reset after delay
+            setTimeout(() => {
+                setName('');
+                setAlias('');
+                setTagline('');
+                setImage('');
+                setSubmitted(false);
+            }, 3000);
+        } catch (error) {
+            console.error("Failed to add mogger:", error);
+            setToast({ type: 'error', message: "Failed to add to database." });
+        }
     };
 
     const handleImageError = (e) => {

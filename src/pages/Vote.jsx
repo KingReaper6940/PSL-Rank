@@ -1,97 +1,66 @@
 import { useState, useCallback, useEffect } from 'react'
 import { Zap, SkipForward, TrendingUp, TrendingDown } from 'lucide-react'
-import { getRandomMatchup, getMoggers, saveMoggers, addMatch, getStats } from '../utils/storage'
-import { calculateElo, getTier } from '../utils/elo'
 import Toast from '../components/Toast'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Vote() {
-    const [matchup, setMatchup] = useState(null);
-    const [selected, setSelected] = useState(null);
-    const [result, setResult] = useState(null);
-    const [toast, setToast] = useState(null);
-    const [totalBattles, setTotalBattles] = useState(0);
-    const [animating, setAnimating] = useState(false);
+    const matchupFromDb = useQuery(api.moggers.getRandomMatchup);
+    const castVote = useMutation(api.moggers.vote);
+
+    const [matchup, setMatchup] = useState(null)
+    const [selected, setSelected] = useState(null)
+    const [result, setResult] = useState(null)
+    const [toast, setToast] = useState(null)
+    const [isTransitioning, setIsTransitioning] = useState(false)
 
     useEffect(() => {
-        loadMatchup();
-        setTotalBattles(getStats().totalVotes || 0);
-    }, []);
-
-    const loadMatchup = useCallback(() => {
-        setSelected(null);
-        setResult(null);
-        setAnimating(false);
-        const m = getRandomMatchup();
-        setMatchup(m);
-    }, []);
-
-    const handleVote = (winnerId) => {
-        if (animating || !matchup) return;
-        setAnimating(true);
-        setSelected(winnerId);
-
-        const winner = matchup.find(m => m.id === winnerId);
-        const loser = matchup.find(m => m.id !== winnerId);
-
-        const { newWinnerRating, newLoserRating } = calculateElo(winner.elo, loser.elo);
-        const eloGain = newWinnerRating - winner.elo;
-        const eloLoss = loser.elo - newLoserRating;
-
-        // Update moggers in storage
-        const allMoggers = getMoggers();
-        const winnerIdx = allMoggers.findIndex(m => m.id === winner.id);
-        const loserIdx = allMoggers.findIndex(m => m.id === loser.id);
-
-        let finalWinnerElo = newWinnerRating;
-        let finalLoserElo = newLoserRating;
-
-        if (winnerIdx !== -1) {
-            allMoggers[winnerIdx].elo = newWinnerRating;
-            allMoggers[winnerIdx].wins += 1;
-            allMoggers[winnerIdx].eloHistory.push(newWinnerRating);
-            if (allMoggers[winnerIdx].eloHistory.length > 30) {
-                allMoggers[winnerIdx].eloHistory = allMoggers[winnerIdx].eloHistory.slice(-30);
-            }
-            finalWinnerElo = allMoggers[winnerIdx].elo;
+        if (!matchup && matchupFromDb && !isTransitioning) {
+            setMatchup(matchupFromDb);
         }
+    }, [matchupFromDb, matchup, isTransitioning]);
 
-        if (loserIdx !== -1) {
-            allMoggers[loserIdx].elo = newLoserRating;
-            allMoggers[loserIdx].losses += 1;
-            allMoggers[loserIdx].eloHistory.push(newLoserRating);
-            if (allMoggers[loserIdx].eloHistory.length > 30) {
-                allMoggers[loserIdx].eloHistory = allMoggers[loserIdx].eloHistory.slice(-30);
-            }
-            finalLoserElo = allMoggers[loserIdx].elo;
-        }
-
-        saveMoggers(allMoggers);
-
-        // Record match
-        addMatch({
-            winnerId: winner.id,
-            winnerName: winner.name,
-            loserId: loser.id,
-            loserName: loser.name,
-            winnerEloChange: eloGain,
-            loserEloChange: -eloLoss,
-            winnerNewElo: finalWinnerElo,
-            loserNewElo: finalLoserElo,
-        });
-
-        setResult({ winner, loser, eloGain, eloLoss, newWinnerRating: finalWinnerElo, newLoserRating: finalLoserElo });
-        setTotalBattles(prev => prev + 1);
-
-        // Show toast
-        setToast({
-            type: 'success',
-            message: `Match recorded.`,
-            duration: 1500
-        });
-
+    const loadNewMatchup = useCallback(() => {
+        setIsTransitioning(true);
         setTimeout(() => {
-            loadMatchup();
-        }, 1600);
+            setMatchup(null);
+            setSelected(null);
+            setResult(null);
+            setIsTransitioning(false);
+        }, 300);
+    }, []);
+
+    const handleVote = async (winnerId) => {
+        if (selected || isTransitioning || !matchup) return;
+
+        setSelected(winnerId);
+        const loser = matchup.find(m => m._id !== winnerId);
+        const winner = matchup.find(m => m._id === winnerId);
+
+        try {
+            const resultData = await castVote({ winnerId: winner._id, loserId: loser._id });
+
+            setResult({
+                winner,
+                loser,
+                eloGain: resultData.eloGained,
+                eloLoss: resultData.eloGained, // Symmetric in basic ELO
+                newWinnerRating: resultData.newWinnerElo,
+                newLoserRating: resultData.newLoserElo
+            });
+
+            setToast({
+                type: 'success',
+                message: `Match recorded.`,
+                duration: 1500
+            });
+
+            setTimeout(() => {
+                loadNewMatchup();
+            }, 1200);
+        } catch (e) {
+            console.error("Vote failed", e);
+        }
     };
 
     const handleImageError = (e) => {
@@ -123,11 +92,11 @@ export default function Vote() {
 
                 <div className="vote-arena">
                     {matchup.map((mogger, idx) => {
-                        const isWinner = result && result.winner.id === mogger.id;
-                        const isLoser = result && result.loser.id === mogger.id;
+                        const isWinner = result && result.winner._id === mogger._id;
+                        const isLoser = result && result.loser._id === mogger._id;
 
                         return (
-                            <div key={mogger.id + '-' + idx} style={{ display: 'flex', alignItems: 'center' }}>
+                            <div key={mogger._id + '-' + idx} style={{ display: 'flex', alignItems: 'center' }}>
                                 {idx === 1 && (
                                     <div className="vs-divider animate-fade-in" style={{ animationDelay: '0.2s' }}>
                                         <div className="vs-text">VS</div>
@@ -135,8 +104,8 @@ export default function Vote() {
                                 )}
                                 <div
                                     key={`card-slot-${idx}`}
-                                    className={`vote-card ${selected === mogger.id ? 'selected' : ''}`}
-                                    onClick={() => handleVote(mogger.id)}
+                                    className={`vote-card animate-slide-up ${selected === mogger._id ? 'selected' : ''}`}
+                                    onClick={() => handleVote(mogger._id)}
                                     style={{
                                         opacity: isLoser ? 0.4 : 1,
                                     }}
@@ -181,7 +150,7 @@ export default function Vote() {
                 </div>
 
                 <div className="vote-actions animate-fade-in" style={{ animationDelay: '0.4s' }}>
-                    <button className="btn btn-secondary" onClick={loadMatchup}>
+                    <button className="btn btn-secondary" onClick={loadNewMatchup} disabled={isTransitioning || selected}>
                         <SkipForward size={16} />
                         Skip Face-off
                     </button>

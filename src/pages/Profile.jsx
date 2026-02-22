@@ -1,13 +1,25 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, Trophy, Target, TrendingUp, Percent } from 'lucide-react'
-import { getMoggerById, getMatches, getMoggers } from '../utils/storage'
+import { ArrowLeft, Trophy, Target, TrendingUp, Percent, ImagePlus } from 'lucide-react'
 import { getTier } from '../utils/elo'
+import { useQuery, useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import Toast from '../components/Toast'
 
 export default function Profile() {
     const { id } = useParams();
-    const mogger = getMoggerById(id);
-    const allMoggers = getMoggers();
-    const allMatches = getMatches();
+    const [showImageForm, setShowImageForm] = useState(false);
+    const [newImage, setNewImage] = useState('');
+    const [toast, setToast] = useState(null);
+
+    const proposeImage = useMutation(api.images?.proposeImage);
+    const mogger = useQuery(api.moggers?.getMoggerById, { id: id });
+    const allMoggersData = useQuery(api.moggers?.getMoggers);
+    const allMoggers = allMoggersData || [];
+    const allMatchesData = useQuery(api.moggers?.getMatches);
+    const allMatches = allMatchesData || [];
+
+    if (mogger === undefined) return null; // loading state
 
     if (!mogger) {
         return (
@@ -26,12 +38,12 @@ export default function Profile() {
     }
 
     const tier = getTier(mogger.elo);
-    const rank = [...allMoggers].sort((a, b) => b.elo - a.elo).findIndex(m => m.id === mogger.id) + 1;
+    const rank = [...allMoggers].sort((a, b) => b.elo - a.elo).findIndex(m => m._id === mogger._id) + 1;
     const totalMatches = mogger.wins + mogger.losses;
     const winRate = totalMatches > 0 ? Math.round((mogger.wins / totalMatches) * 100) : 0;
 
     const moggerMatches = allMatches
-        .filter(m => m.winnerId === mogger.id || m.loserId === mogger.id)
+        .filter(m => m.winnerId === mogger._id || m.loserId === mogger._id)
         .slice(0, 20);
 
     const eloHistory = mogger.eloHistory || [];
@@ -92,9 +104,42 @@ export default function Profile() {
                                 {mogger.name.charAt(0)}
                             </div>
                         </div>
-                        <span className="tier-badge" style={{ marginTop: 16 }}>
+                        <span className="tier-badge" style={{ marginTop: 16, marginBottom: 16 }}>
                             {tier.label}
                         </span>
+
+                        {!showImageForm ? (
+                            <button onClick={() => setShowImageForm(true)} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.8rem', padding: '8px' }}>
+                                <ImagePlus size={14} /> Suggest Better Image
+                            </button>
+                        ) : (
+                            <form onSubmit={async (e) => {
+                                e.preventDefault();
+                                if (!newImage) return;
+                                try {
+                                    await proposeImage({ moggerId: mogger._id, imageUrl: newImage });
+                                    setToast({ type: 'success', message: 'Image sent to Gemini for review. This page will update if approved.' });
+                                    setShowImageForm(false);
+                                    setNewImage('');
+                                } catch (err) {
+                                    setToast({ type: 'error', message: 'Failed to submit.' });
+                                }
+                            }} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }} className="animate-fade-in">
+                                <input
+                                    type="url"
+                                    className="form-input"
+                                    placeholder="Paste Image URL"
+                                    value={newImage}
+                                    onChange={e => setNewImage(e.target.value)}
+                                    style={{ padding: '8px', fontSize: '0.8rem' }}
+                                    required
+                                />
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button type="submit" className="btn btn-primary" style={{ flex: 1, padding: '6px', fontSize: '0.8rem' }}>Submit</button>
+                                    <button type="button" onClick={() => setShowImageForm(false)} className="btn btn-secondary" style={{ padding: '6px', fontSize: '0.8rem' }}>Cancel</button>
+                                </div>
+                            </form>
+                        )}
                     </div>
 
                     <div style={{ flex: 1 }}>
@@ -170,12 +215,12 @@ export default function Profile() {
                     {moggerMatches.length > 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             {moggerMatches.map((match) => {
-                                const isWin = match.winnerId === mogger.id;
+                                const isWin = match.winnerId === mogger._id;
                                 const opponentName = isWin ? match.loserName : match.winnerName;
                                 const eloChange = isWin ? match.winnerEloChange : match.loserEloChange;
 
                                 return (
-                                    <div key={match.id} className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', borderRadius: 'var(--radius-md)' }}>
+                                    <div key={match._id} className="glass-panel" style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', borderRadius: 'var(--radius-md)' }}>
                                         <span style={{
                                             padding: '4px 10px',
                                             borderRadius: 'var(--radius-sm)',
@@ -204,6 +249,8 @@ export default function Profile() {
                     )}
                 </div>
             </div>
+
+            {toast && <Toast {...toast} onClose={() => setToast(null)} />}
         </div>
     );
 }

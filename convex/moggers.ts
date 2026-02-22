@@ -27,6 +27,37 @@ export const getMoggerById = query({
     },
 });
 
+export const getStats = query({
+    args: {},
+    handler: async (ctx) => {
+        const matches = await ctx.db.query("matches").collect();
+        return { totalVotes: matches.length };
+    }
+});
+
+export const getRandomMatchup = query({
+    args: {},
+    handler: async (ctx) => {
+        const moggers = await ctx.db.query("moggers").collect();
+        if (moggers.length < 2) return null;
+
+        const idx1 = Math.floor(Math.random() * moggers.length);
+        let idx2 = Math.floor(Math.random() * moggers.length);
+        while (idx1 === idx2) {
+            idx2 = Math.floor(Math.random() * moggers.length);
+        }
+
+        return [moggers[idx1], moggers[idx2]];
+    }
+});
+
+export const getMatches = query({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.db.query("matches").order("desc").collect();
+    }
+});
+
 export const addMogger = mutation({
     args: {
         name: v.string(),

@@ -1,15 +1,17 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, TrendingUp, TrendingDown, Minus } from 'lucide-react'
-import { getMoggers } from '../utils/storage'
 import { getTier } from '../utils/elo'
+import { useQuery } from 'convex/react'
+import { api } from '../../convex/_generated/api'
 
 export default function Leaderboard() {
     const [search, setSearch] = useState('');
     const [tierFilter, setTierFilter] = useState('ALL');
     const [sortBy, setSortBy] = useState('elo');
 
-    const allMoggers = getMoggers();
+    const allMoggersData = useQuery(api.moggers?.getMoggers);
+    const allMoggers = allMoggersData || [];
 
     const sorted = useMemo(() => {
         let list = [...allMoggers];
@@ -76,7 +78,7 @@ export default function Leaderboard() {
                 {showPodium && top3.length >= 3 && (
                     <div className="podium-section">
                         {/* 2nd place */}
-                        <Link to={`/profile/${top3[1].id}`} className="podium-card rank-2 animate-slide-up" style={{ animationDelay: '0.1s', textDecoration: 'none', color: 'inherit' }}>
+                        <Link to={`/profile/${top3[1]._id}`} className="podium-card rank-2 animate-slide-up" style={{ animationDelay: '0.1s', textDecoration: 'none', color: 'inherit' }}>
                             <div className="podium-rank-badge">#2</div>
                             <div className="podium-avatar-wrap">
                                 <img src={top3[1].image} alt={top3[1].name} className="podium-avatar" onError={handleImageError} />
@@ -89,7 +91,7 @@ export default function Leaderboard() {
                         </Link>
 
                         {/* 1st place */}
-                        <Link to={`/profile/${top3[0].id}`} className="podium-card rank-1 animate-slide-up" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Link to={`/profile/${top3[0]._id}`} className="podium-card rank-1 animate-slide-up" style={{ textDecoration: 'none', color: 'inherit' }}>
                             <div className="podium-rank-badge">#1</div>
                             <div className="podium-avatar-wrap" style={{ transform: 'scale(1.1)', marginBottom: '24px' }}>
                                 <img src={top3[0].image} alt={top3[0].name} className="podium-avatar" onError={handleImageError} />
@@ -102,7 +104,7 @@ export default function Leaderboard() {
                         </Link>
 
                         {/* 3rd place */}
-                        <Link to={`/profile/${top3[2].id}`} className="podium-card rank-3 animate-slide-up" style={{ animationDelay: '0.2s', textDecoration: 'none', color: 'inherit' }}>
+                        <Link to={`/profile/${top3[2]._id}`} className="podium-card rank-3 animate-slide-up" style={{ animationDelay: '0.2s', textDecoration: 'none', color: 'inherit' }}>
                             <div className="podium-rank-badge">#3</div>
                             <div className="podium-avatar-wrap">
                                 <img src={top3[2].image} alt={top3[2].name} className="podium-avatar" onError={handleImageError} />
@@ -197,8 +199,8 @@ export default function Leaderboard() {
 
                         return (
                             <Link
-                                to={`/profile/${mogger.id}`}
-                                key={mogger.id}
+                                to={`/profile/${mogger._id}`}
+                                key={mogger._id}
                                 className="leaderboard-row animate-slide-up"
                                 style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
                             >
