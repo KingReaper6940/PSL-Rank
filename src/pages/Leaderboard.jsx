@@ -82,7 +82,7 @@ export default function Leaderboard() {
     return (
         <div className="page">
             <div className="container">
-                <div className="page-header animate-fade-in">
+                <div className="page-header leaderboard-page-header animate-fade-in">
                     <h1 className="page-title text-gradient">WORLDWIDE LEADERBOARD</h1>
                     <p className="page-subtitle">The definitive global ranking of every contender.</p>
                 </div>
@@ -135,7 +135,9 @@ export default function Leaderboard() {
                 <div className="leaderboard-controls animate-fade-in stagger-4">
                     <div className="search-box">
                         <Search size={18} />
+                        <label htmlFor="leaderboard-search" className="sr-only">Search contenders</label>
                         <input
+                            id="leaderboard-search"
                             type="text"
                             placeholder="Search contenders..."
                             value={search}
@@ -143,21 +145,13 @@ export default function Leaderboard() {
                         />
                     </div>
 
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className="leaderboard-filter-group">
+                        <label htmlFor="tier-filter" className="sr-only">Filter by tier</label>
                         <select
+                            id="tier-filter"
+                            className="select-control"
                             value={tierFilter}
                             onChange={(e) => setTierFilter(e.target.value)}
-                            style={{
-                                padding: '10px 16px',
-                                borderRadius: 'var(--radius-md)',
-                                border: '1px solid var(--border-subtle)',
-                                background: 'var(--bg-surface)',
-                                color: 'var(--text-primary)',
-                                fontFamily: 'var(--font-body)',
-                                fontSize: '0.9rem',
-                                outline: 'none',
-                                cursor: 'pointer',
-                            }}
                         >
                             <option value="ALL">All Tiers</option>
                             <option value="S">S Tier</option>
@@ -167,20 +161,12 @@ export default function Leaderboard() {
                             <option value="D">D Tier</option>
                         </select>
 
+                        <label htmlFor="sort-by" className="sr-only">Sort leaderboard</label>
                         <select
+                            id="sort-by"
+                            className="select-control"
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
-                            style={{
-                                padding: '10px 16px',
-                                borderRadius: 'var(--radius-md)',
-                                border: '1px solid var(--border-subtle)',
-                                background: 'var(--bg-surface)',
-                                color: 'var(--text-primary)',
-                                fontFamily: 'var(--font-body)',
-                                fontSize: '0.9rem',
-                                outline: 'none',
-                                cursor: 'pointer',
-                            }}
                         >
                             <option value="elo">Sort by ELO</option>
                             <option value="wins">Sort by Wins</option>
@@ -191,7 +177,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* Table Header */}
-                <div className="leaderboard-row header animate-fade-in stagger-5">
+                <div className="leaderboard-row header leaderboard-header-row animate-fade-in stagger-5">
                     <div className="col-rank"><span>#</span></div>
                     <div className="col-mogger"><span>Contender</span></div>
                     <div className="col-elo"><span>ELO</span></div>
@@ -201,7 +187,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* Table Rows */}
-                <div className="leaderboard-table">
+                <div className="leaderboard-table leaderboard-table-surface">
                     {rest.map((mogger, index) => {
                         const globalRank = globalRanks[mogger._id] || (index + 1);
                         const tier = getTier(mogger.elo);

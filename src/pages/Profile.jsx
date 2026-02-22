@@ -182,6 +182,19 @@ export default function Profile() {
                                 <div style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Win Rate</div>
                             </div>
                         </div>
+
+                        <div style={{
+                            marginTop: 18,
+                            textAlign: 'right',
+                            color: 'var(--text-tertiary)',
+                            fontSize: '0.7rem',
+                            letterSpacing: '0.14em',
+                            textTransform: 'uppercase',
+                            opacity: 0.85,
+                            userSelect: 'none',
+                        }}>
+                            pslranked.com
+                        </div>
                     </div>
                 </div>
 
