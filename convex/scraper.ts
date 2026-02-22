@@ -117,7 +117,8 @@ export const syncMoggers = internalMutation({
                     wins: scraped.wins || 0,
                     losses: scraped.losses || 0,
                     eloHistory: [scraped.elo],
-                    dateAdded: new Date().toISOString().split("T")[0]
+                    dateAdded: new Date().toISOString().split("T")[0],
+                    isScraped: true
                 });
             }
         }

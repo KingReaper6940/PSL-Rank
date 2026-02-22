@@ -31,12 +31,21 @@ export const getStats = query({
     args: {},
     handler: async (ctx) => {
         const matches = await ctx.db.query("matches").collect();
+        const allMoggers = await ctx.db.query("moggers").collect();
         const meta = await ctx.db.query("metadata").first();
         const externalVotes = meta?.externalVoteCount || 0;
+
+        let authenticMoggersCount = 0;
+        for (const m of allMoggers) {
+            if (!m.isScraped) authenticMoggersCount++;
+        }
+
         return {
             totalVotes: matches.length + externalVotes,
             localVotes: matches.length,
-            externalVotes
+            externalVotes,
+            totalMoggers: allMoggers.length,
+            authenticMoggers: authenticMoggersCount
         };
     }
 });

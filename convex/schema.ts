@@ -12,7 +12,8 @@ export default defineSchema({
         losses: v.number(),
         eloHistory: v.array(v.number()),
         dateAdded: v.string(),
-    }).index("by_elo", ["elo"]).index("by_name", ["name"]),
+        isScraped: v.optional(v.boolean()),
+    }).index("by_elo", ["elo"]).index("by_name", ["name"]).index("by_scraped", ["isScraped"]),
 
     matches: defineTable({
         winnerId: v.string(),

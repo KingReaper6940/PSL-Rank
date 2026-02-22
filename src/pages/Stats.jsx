@@ -63,9 +63,14 @@ export default function Stats() {
                     <div className="glass-panel animate-slide-up stagger-1" style={{ padding: '24px', borderRadius: 'var(--radius-lg)' }}>
                         <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}><Users size={24} /></div>
                         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', marginBottom: '4px', color: 'var(--text-primary)' }}>{totalMoggers}</div>
-                        <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Total Contenders</div>
+                        <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Total Global Contenders</div>
                     </div>
                     <div className="glass-panel animate-slide-up stagger-2" style={{ padding: '24px', borderRadius: 'var(--radius-lg)' }}>
+                        <div style={{ marginBottom: '12px', color: 'var(--accent-success)' }}><Users size={24} /></div>
+                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', marginBottom: '4px', color: 'var(--text-primary)' }}>{stats.authenticMoggers || 0}</div>
+                        <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Submitted by Real Users</div>
+                    </div>
+                    <div className="glass-panel animate-slide-up stagger-3" style={{ padding: '24px', borderRadius: 'var(--radius-lg)' }}>
                         <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}><Swords size={24} /></div>
                         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', marginBottom: '4px', color: 'var(--text-primary)' }}>{totalVotes.toLocaleString()}</div>
                         <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Total Battles</div>
@@ -75,7 +80,7 @@ export default function Stats() {
                         <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', marginBottom: '4px', color: 'var(--text-primary)' }}>{avgElo}</div>
                         <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Average ELO</div>
                     </div>
-                    <div className="glass-panel animate-slide-up stagger-4" style={{ padding: '24px', borderRadius: 'var(--radius-lg)' }}>
+                    <div className="glass-panel animate-slide-up stagger-5" style={{ padding: '24px', borderRadius: 'var(--radius-lg)' }}>
                         <div style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}><Award size={24} /></div>
                         <div className="text-gradient-gold" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.2rem', marginBottom: '4px' }}>{highestElo}</div>
                         <div style={{ color: 'var(--text-tertiary)', fontSize: '0.85rem', fontWeight: 600 }}>Highest ELO</div>
