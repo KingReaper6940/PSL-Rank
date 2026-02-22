@@ -144,42 +144,47 @@ export default function Profile() {
 
                     <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 8, flexWrap: 'wrap' }}>
-                            <h1 className="page-title text-gradient" style={{ margin: 0, fontSize: '2.5rem' }}>{mogger.name}</h1>
+                            <h1 className="page-title" style={{ margin: 0, fontSize: '2.5rem', fontFamily: 'var(--font-display)', fontWeight: 800 }}>{mogger.name}</h1>
                             <div style={{
-                                background: 'var(--text-primary)',
-                                color: 'var(--bg-base)',
-                                borderRadius: 'var(--radius-sm)',
-                                padding: '4px 12px',
+                                background: '#ffffff',
+                                color: '#000000',
+                                borderRadius: '6px',
+                                padding: '4px 10px',
                                 fontFamily: 'var(--font-display)',
                                 fontWeight: 800,
-                                fontSize: '0.9rem',
+                                fontSize: '0.85rem',
                             }}>
                                 Rank #{rank}
                             </div>
                         </div>
-                        {mogger.alias && <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', marginBottom: 16 }}>@{mogger.alias}</div>}
-                        {mogger.tagline && <div style={{ color: 'var(--text-tertiary)', fontSize: '1rem', fontStyle: 'italic', marginBottom: 32 }}>"{mogger.tagline}"</div>}
+                        {mogger.alias && <div style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 16 }}>@{mogger.alias}</div>}
+                        {mogger.tagline && <div style={{ color: 'var(--text-tertiary)', fontSize: '0.95rem', fontStyle: 'italic', marginBottom: 24 }}>"{mogger.tagline}"</div>}
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '16px' }}>
-                            <div className="glass-panel" style={{ padding: '16px', borderRadius: 'var(--radius-md)', textAlign: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                                <div style={{ marginBottom: 8, color: 'var(--text-secondary)' }}><Trophy size={18} /></div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--text-primary)' }}>{mogger.elo}</div>
-                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ELO</div>
+                        {/* Top Group: ELO, Matches, Wins */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(100px, 1fr))', gap: '16px', marginBottom: '16px', maxWidth: '440px' }}>
+                            <div className="glass-panel" style={{ padding: '20px', borderRadius: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}><Trophy size={18} style={{ margin: '0 auto' }} /></div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: 4 }}>{mogger.elo}</div>
+                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>ELO</div>
                             </div>
-                            <div className="glass-panel" style={{ padding: '16px', borderRadius: 'var(--radius-md)', textAlign: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                                <div style={{ marginBottom: 8, color: 'var(--text-secondary)' }}><Target size={18} /></div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.5rem' }}>{totalMatches}</div>
-                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Matches</div>
+                            <div className="glass-panel" style={{ padding: '20px', borderRadius: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}><Target size={18} style={{ margin: '0 auto' }} /></div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: 4 }}>{totalMatches}</div>
+                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Matches</div>
                             </div>
-                            <div className="glass-panel" style={{ padding: '16px', borderRadius: 'var(--radius-md)', textAlign: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                                <div style={{ marginBottom: 8, color: 'var(--accent-success)' }}><TrendingUp size={18} /></div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--accent-success)' }}>{mogger.wins}</div>
-                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Wins</div>
+                            <div className="glass-panel" style={{ padding: '20px', borderRadius: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ marginBottom: 12, color: 'var(--accent-success)' }}><TrendingUp size={18} style={{ margin: '0 auto' }} /></div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--accent-success)', marginBottom: 4 }}>{mogger.wins}</div>
+                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Wins</div>
                             </div>
-                            <div className="glass-panel" style={{ padding: '16px', borderRadius: 'var(--radius-md)', textAlign: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                                <div style={{ marginBottom: 8, color: 'var(--text-secondary)' }}><Percent size={18} /></div>
-                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.5rem' }}>{winRate}%</div>
-                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Win Rate</div>
+                        </div>
+
+                        {/* Bottom Group: Win Rate */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(100px, 136px)', gap: '16px', maxWidth: '440px' }}>
+                            <div className="glass-panel" style={{ padding: '20px', borderRadius: '12px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                                <div style={{ marginBottom: 12, color: 'var(--text-tertiary)' }}><Percent size={18} style={{ margin: '0 auto' }} /></div>
+                                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.6rem', color: 'var(--text-primary)', marginBottom: 4 }}>{winRate}%</div>
+                                <div style={{ color: 'var(--text-tertiary)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>Win Rate</div>
                             </div>
                         </div>
 
@@ -247,6 +252,18 @@ export default function Profile() {
                                             {isWin ? 'WIN' : 'LOSS'}
                                         </span>
                                         <span style={{ flex: 1, color: 'var(--text-secondary)' }}>vs <strong style={{ color: 'var(--text-primary)' }}>{opponentName}</strong></span>
+                                        <span style={{
+                                            padding: '2px 8px',
+                                            borderRadius: '4px',
+                                            fontSize: '0.65rem',
+                                            fontWeight: 800,
+                                            background: 'rgba(255,255,255,0.05)',
+                                            color: 'var(--text-tertiary)',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.05em'
+                                        }}>
+                                            PSL Battle
+                                        </span>
                                         <span style={{ fontWeight: 600, color: isWin ? 'var(--accent-success)' : 'var(--accent-danger)' }}>
                                             {eloChange ? (eloChange > 0 ? `+${eloChange}` : eloChange) : ''}
                                         </span>
