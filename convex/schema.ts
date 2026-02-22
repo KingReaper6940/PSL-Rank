@@ -19,6 +19,7 @@ export default defineSchema({
         winnerId: v.string(),
         loserId: v.string(),
         timestamp: v.number(),
+        source: v.optional(v.string()),
     }).index("by_timestamp", ["timestamp"]).index("by_winner", ["winnerId"]).index("by_loser", ["loserId"]),
 
     imageRequests: defineTable({

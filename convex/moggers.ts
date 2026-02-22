@@ -13,6 +13,47 @@ function calcElo(rating1: number, rating2: number, score1: number, score2: numbe
     ];
 }
 
+import { internalMutation } from "./_generated/server";
+export const backfillMatchesSource = internalMutation({
+    args: {},
+    handler: async (ctx) => {
+        const matches = await ctx.db.query("matches").collect();
+        for (const m of matches) {
+            if (!m.source) {
+                await ctx.db.patch(m._id, { source: "User Generated" });
+            }
+        }
+    }
+});
+
+export const nukeFakeMatches = internalMutation({
+    args: {},
+    handler: async (ctx) => {
+        // The cron job fired precisely 3 matches at the exact same millisecond every 5 mins.
+        // We will find all matches, group them by timestamp, and if there are 3+ in the exact same MS, deleting them.
+        const matches = await ctx.db.query("matches").order("desc").collect();
+        const timeGroups = new Map<number, typeof matches>();
+
+        for (const m of matches) {
+            if (!timeGroups.has(m.timestamp)) timeGroups.set(m.timestamp, []);
+            timeGroups.get(m.timestamp)!.push(m);
+        }
+
+        let deletedCount = 0;
+        for (const [timestamp, group] of timeGroups.entries()) {
+            // If they were generated instantly in a batch of 3, they are bot matches.
+            // Even if a human double-clicked, 3 in 1 exact millisecond is impossible.
+            if (group.length >= 3) {
+                for (const match of group) {
+                    await ctx.db.delete(match._id);
+                    deletedCount++;
+                }
+            }
+        }
+        return `Deleted ${deletedCount} fake bot matches.`;
+    }
+});
+
 export const getMoggers = query({
     args: {},
     handler: async (ctx) => {
@@ -134,6 +175,7 @@ export const vote = mutation({
             winnerId: args.winnerId,
             loserId: args.loserId,
             timestamp: Date.now(),
+            source: "User Generated"
         });
 
         return { newWinnerElo, newLoserElo, eloGained: newWinnerElo - winner.elo };
