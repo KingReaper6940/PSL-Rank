@@ -76,7 +76,7 @@ export default function Leaderboard() {
 
                 {/* Podium for Top 3 */}
                 {showPodium && top3.length >= 3 && (
-                    <div className="podium-section">
+                    <div className="podium-section animate-fade-in stagger-2">
                         {/* 2nd place */}
                         <Link to={`/profile/${top3[1]._id}`} className="podium-card rank-2 animate-slide-up" style={{ animationDelay: '0.1s', textDecoration: 'none', color: 'inherit' }}>
                             <div className="podium-rank-badge">#2</div>
@@ -119,7 +119,7 @@ export default function Leaderboard() {
                 )}
 
                 {/* Controls */}
-                <div className="leaderboard-controls animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="leaderboard-controls animate-fade-in stagger-4" style={{ animationDelay: '0.25s' }}>
                     <div className="search-box">
                         <Search size={18} />
                         <input
@@ -178,7 +178,7 @@ export default function Leaderboard() {
                 </div>
 
                 {/* Table Header */}
-                <div className="leaderboard-row header animate-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="leaderboard-row header animate-fade-in stagger-5" style={{ animationDelay: '0.3s' }}>
                     <div className="col-rank"><span>#</span></div>
                     <div className="col-mogger"><span>Contender</span></div>
                     <div className="col-elo"><span>ELO</span></div>

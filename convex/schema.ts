@@ -26,4 +26,9 @@ export default defineSchema({
         status: v.union(v.literal("pending"), v.literal("approved"), v.literal("rejected")),
         timestamp: v.number(),
     }).index("by_status", ["status"]).index("by_mogger", ["moggerId"]),
+
+    metadata: defineTable({
+        externalVoteCount: v.number(),
+        lastSyncTimestamp: v.number(),
+    }),
 });

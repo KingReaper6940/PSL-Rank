@@ -3,10 +3,10 @@ import { internal } from "./_generated/api";
 
 const crons = cronJobs();
 
-// This runs the scraper every hour automatically to merge ChadScan's data globally.
-crons.hourly(
+// Scrape ChadScan every 15 minutes to keep our data comprehensive and fresh
+crons.interval(
     "scrape chadscan data",
-    { minuteUTC: 0 },
+    { minutes: 15 },
     internal.scraper.scrapeChadscan
 );
 

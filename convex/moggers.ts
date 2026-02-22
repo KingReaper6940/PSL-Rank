@@ -31,7 +31,13 @@ export const getStats = query({
     args: {},
     handler: async (ctx) => {
         const matches = await ctx.db.query("matches").collect();
-        return { totalVotes: matches.length };
+        const meta = await ctx.db.query("metadata").first();
+        const externalVotes = meta?.externalVoteCount || 0;
+        return {
+            totalVotes: matches.length + externalVotes,
+            localVotes: matches.length,
+            externalVotes
+        };
     }
 });
 
