@@ -54,10 +54,30 @@ export const nukeFakeMatches = internalMutation({
     }
 });
 
-export const getMoggers = query({
+export const backfillMoggerIds = internalMutation({
     args: {},
     handler: async (ctx) => {
-        return await ctx.db.query("moggers").order("desc").collect();
+        const allMoggers = await ctx.db.query("moggers").collect();
+        const allIds = allMoggers.map(m => m._id);
+
+        const meta = await ctx.db.query("metadata").first();
+        if (meta) {
+            await ctx.db.patch(meta._id, { moggerIds: allIds });
+        } else {
+            await ctx.db.insert("metadata", {
+                externalVoteCount: 0,
+                lastSyncTimestamp: Date.now(),
+                moggerIds: allIds
+            });
+        }
+    }
+});
+
+export const getMoggers = query({
+    args: { limit: v.optional(v.number()) },
+    handler: async (ctx, args) => {
+        // Limited to top 500 by default to save database bandwidth across connections
+        return await ctx.db.query("moggers").withIndex("by_elo").order("desc").take(args.limit || 500);
     },
 });
 
@@ -95,16 +115,27 @@ export const getStats = query({
 export const getRandomMatchup = query({
     args: {},
     handler: async (ctx) => {
-        const moggers = await ctx.db.query("moggers").collect();
-        if (moggers.length < 2) return null;
+        // Read from the metadata cache instead of collecting the entire table 
+        // This drops database bandwidth usage from 5000+ docs to just 3 docs per vote
+        const meta = await ctx.db.query("metadata").first();
+        const ids = meta?.moggerIds || [];
 
-        const idx1 = Math.floor(Math.random() * moggers.length);
-        let idx2 = Math.floor(Math.random() * moggers.length);
-        while (idx1 === idx2) {
-            idx2 = Math.floor(Math.random() * moggers.length);
+        if (ids.length < 2) {
+            // Fallback for extreme cases (should be populated by cron/mutations)
+            const fallback = await ctx.db.query("moggers").order("asc").take(10);
+            return fallback.length >= 2 ? [fallback[0], fallback[1]] : null;
         }
 
-        return [moggers[idx1], moggers[idx2]];
+        const idx1 = Math.floor(Math.random() * ids.length);
+        let idx2 = Math.floor(Math.random() * ids.length);
+        while (idx1 === idx2) {
+            idx2 = Math.floor(Math.random() * ids.length);
+        }
+
+        const m1 = await ctx.db.get(ids[idx1]);
+        const m2 = await ctx.db.get(ids[idx2]);
+
+        return m1 && m2 ? [m1, m2] : null;
     }
 });
 

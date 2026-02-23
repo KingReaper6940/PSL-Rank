@@ -32,5 +32,6 @@ export default defineSchema({
     metadata: defineTable({
         externalVoteCount: v.number(),
         lastSyncTimestamp: v.number(),
+        moggerIds: v.optional(v.array(v.id("moggers"))),
     }),
 });

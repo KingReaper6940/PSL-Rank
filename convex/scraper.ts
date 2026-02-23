@@ -123,14 +123,22 @@ export const syncMoggers = internalMutation({
             }
         }
 
-        // Upsert the external vote count into a metadata table
+        // Upsert the external vote count and cache mogger IDs into the metadata table
+        // This offloads the heavy DB reads from the users directly to a 15-minute scheduled pulse
+        const allMoggers = await ctx.db.query("moggers").collect();
+        const allIds = allMoggers.map(m => m._id);
+
         const meta = await ctx.db.query("metadata").first();
         if (meta) {
-            await ctx.db.patch(meta._id, { externalVoteCount: args.externalVoteCount });
+            await ctx.db.patch(meta._id, {
+                externalVoteCount: args.externalVoteCount,
+                moggerIds: allIds
+            });
         } else {
             await ctx.db.insert("metadata", {
                 externalVoteCount: args.externalVoteCount,
-                lastSyncTimestamp: Date.now()
+                lastSyncTimestamp: Date.now(),
+                moggerIds: allIds
             });
         }
     }
