@@ -16,8 +16,8 @@ export default function Profile() {
     const mogger = useQuery(api.moggers?.getMoggerById, { id: id });
     const allMoggersData = useQuery(api.moggers?.getMoggers);
     const allMoggers = allMoggersData || [];
-    const allMatchesData = useQuery(api.moggers?.getMatches);
-    const allMatches = allMatchesData || [];
+    const moggerMatchesData = useQuery(api.moggers?.getMatchesByMogger, { id: id });
+    const moggerMatches = moggerMatchesData || [];
 
     if (mogger === undefined) return null; // loading state
 
@@ -41,10 +41,6 @@ export default function Profile() {
     const rank = [...allMoggers].sort((a, b) => b.elo - a.elo).findIndex(m => m._id === mogger._id) + 1;
     const totalMatches = mogger.wins + mogger.losses;
     const winRate = totalMatches > 0 ? Math.round((mogger.wins / totalMatches) * 100) : 0;
-
-    const moggerMatches = allMatches
-        .filter(m => m.winnerId === mogger._id || m.loserId === mogger._id)
-        .slice(0, 20);
 
     const eloHistory = mogger.eloHistory || [];
     const minElo = Math.min(...eloHistory) - 20;

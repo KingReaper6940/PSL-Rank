@@ -72,6 +72,7 @@ export const getStats = query({
     args: {},
     handler: async (ctx) => {
         const matches = await ctx.db.query("matches").collect();
+        const matchesCount = matches.length;
         const allMoggers = await ctx.db.query("moggers").collect();
         const meta = await ctx.db.query("metadata").first();
         const externalVotes = meta?.externalVoteCount || 0;
@@ -82,8 +83,8 @@ export const getStats = query({
         }
 
         return {
-            totalVotes: matches.length + externalVotes,
-            localVotes: matches.length,
+            totalVotes: matchesCount + externalVotes,
+            localVotes: matchesCount,
             externalVotes,
             totalMoggers: allMoggers.length,
             authenticMoggers: authenticMoggersCount
@@ -111,6 +112,19 @@ export const getMatches = query({
     args: {},
     handler: async (ctx) => {
         return await ctx.db.query("matches").order("desc").collect();
+    }
+});
+
+export const getMatchesByMogger = query({
+    args: { id: v.id("moggers"), limit: v.optional(v.number()) },
+    handler: async (ctx, args) => {
+        const limit = args.limit || 20;
+
+        const won = await ctx.db.query("matches").withIndex("by_winner", q => q.eq("winnerId", args.id)).order("desc").take(limit);
+        const lost = await ctx.db.query("matches").withIndex("by_loser", q => q.eq("loserId", args.id)).order("desc").take(limit);
+
+        const combined = [...won, ...lost].sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
+        return combined;
     }
 });
 

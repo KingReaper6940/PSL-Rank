@@ -8,8 +8,6 @@ export default function Stats() {
     const moggers = moggersData || [];
     const statsData = useQuery(api.moggers?.getStats);
     const stats = statsData || { totalVotes: 0 };
-    const matchesData = useQuery(api.moggers?.getMatches);
-    const matches = matchesData || [];
 
     const totalMoggers = moggers.length;
     const totalVotes = (stats.localVotes || 0) + (stats.externalVotes || 0);
